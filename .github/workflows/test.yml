@@ -1,0 +1,33 @@
+name: Test
+on: push
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    container: golang:1.25.0-bookworm
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: example
+        ports:
+          - 5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          go install -tags 'postgres' -x github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+      - name: Run Migrations
+        run: |
+          migrate -path=./migrations \
+            -database=postgres://user:password@postgres:5432/example?sslmode=disable up
