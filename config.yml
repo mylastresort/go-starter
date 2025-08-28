@@ -1,0 +1,8 @@
+DB:
+  NAME: example
+  USER: user
+  PASS: password
+  HOST: postgres
+  PORT: 5432
+HTTP:
+  PORT: 8080
