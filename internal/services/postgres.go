@@ -7,16 +7,17 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var _db *gorm.DB
 
-func DB() *gorm.DB {
+func PostgresDB() *gorm.DB {
 	return _db
 }
 
 func LoadDatabase() {
-	log.Default().Print("LOADING Database")
+	Logger.Info("Connecting to database")
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
 		Conf.DB.HOST,
@@ -26,12 +27,16 @@ func LoadDatabase() {
 		Conf.DB.PORT,
 	)
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	loadMigrations(database)
+	_db = database
+
+	loadMigrations(_db)
 }
 
 func loadMigrations(db *gorm.DB) {

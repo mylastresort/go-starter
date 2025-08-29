@@ -1,36 +1,47 @@
 package internal
 
 import (
-	"log"
 	"net/http"
+	"server/internal/middlewares"
+	"server/internal/routes"
 	"server/internal/services"
 	"strconv"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	echojwt "github.com/labstack/echo-jwt/v4"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var Server *echo.Echo
 
-func Init() {
-	services.LoadConfig()
+func Init(config string) {
+	services.LoadValidator()
+	services.LoadConfig(config)
 	services.LoadDatabase()
 	LoadServer()
+
+	// seeds.AddUsersSeeds()
 }
 
 func LoadServer() {
-	log.Default().Print("LOADING Server")
+	services.Logger.Debug("Loading Server")
+
 	Server = echo.New()
 	Server.Use(middleware.Logger())
-	AddUserRouter(Server)
+	config := echojwt.Config{
+		SigningKey: []byte(services.Conf.JWT.SigningKey),
+	}
+
+	middlewares.SetupJWT(config)
+
+	routes.AddAuthRouter(Server.Group("/auth"))
+	routes.AddUserRouter(Server.Group("/users"))
 }
 
 func StartServer() {
-	log.Default().Print("STARTING SERVER")
-	if err := Server.Start(":" + strconv.Itoa(services.Conf.HTTP.PORT)); err != http.ErrServerClosed {
+	services.Logger.Info("Starting Server")
+	port := strconv.Itoa(services.Conf.HTTP.PORT)
+	if err := Server.Start(":" + port); err != http.ErrServerClosed {
 		Server.Logger.Fatal(err)
 	}
-}
-
-func StopServer() {
 }

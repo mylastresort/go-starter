@@ -1,8 +1,14 @@
 package models
 
+import (
+	"github.com/lib/pq"
+
+	"gorm.io/gorm"
+)
+
 type User struct {
-	ID         uint `gorm:"primaryKey"`
-	Name       string
-	Email      string `gorm:"uniqueIndex"`
-	HashedPass string
+	gorm.Model
+	Tokens pq.StringArray `gorm:"type:text[]"`
+	Name   string
+	Email  string `gorm:"uniqueIndex"`
 }

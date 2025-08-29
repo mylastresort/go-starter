@@ -1,9 +1,10 @@
 package services
 
 import (
-	"fmt"
 	"log"
+	"server/internal/utils"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -18,16 +19,23 @@ type AppConfig struct {
 		HOST string `mapstructure:"HOST"`
 		PORT int    `mapstructure:"PORT"`
 	} `mapstructure:"DB"`
+
 	HTTP struct {
 		PORT int
 	} `mapstructure:"HTTP"`
+
+	JWT struct {
+		SigningKey            string `mapstructure:"SECRET_KEY"`
+		AccessTkExpiresAtRaw  string `mapstructure:"ACCESS_TOKEN_EXPIRES_AT"`
+		RefreshTkExpiresAtRaw string `mapstructure:"REFRESH_TOKEN_EXPIRES_AT"`
+		AccessTkExpiresAt     time.Duration
+		RefreshTkExpiresAt    time.Duration
+	} `mapstructure:"JWT"`
 }
 
-func LoadConfig() {
-	log.Default().Print("LOADING Config")
-	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
-	viper.SetConfigType("yml")
+func LoadConfig(config string) {
+	Logger.Debug("Loading Config")
+	viper.SetConfigFile(config)
 
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
@@ -44,5 +52,17 @@ func LoadConfig() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(Conf.DB.HOST)
+	expAt, err := utils.ParseDuration(Conf.JWT.AccessTkExpiresAtRaw)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	Conf.JWT.AccessTkExpiresAt = expAt
+
+	expAt, err = utils.ParseDuration(Conf.JWT.RefreshTkExpiresAtRaw)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	Conf.JWT.RefreshTkExpiresAt = expAt
 }

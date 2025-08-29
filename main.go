@@ -1,10 +1,10 @@
 package main
 
-import "server/internal"
+import (
+	"server/internal"
+)
 
 func main() {
-	internal.Init()
-
+	internal.Init("hypertube.yml")
 	internal.StartServer()
-	defer internal.StopServer()
 }
