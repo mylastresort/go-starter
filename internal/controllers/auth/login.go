@@ -5,11 +5,12 @@ import (
 	"server/internal/services"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginUserType struct {
-	Email string `validate:"required"`
-	// Password string `validate:"required"`
+	Email    string `validate:"required"`
+	Password string `validate:"required"`
 }
 
 func Login(c echo.Context) error {
@@ -27,7 +28,11 @@ func Login(c echo.Context) error {
 
 	user, err := services.GetUserByEmail(newUser.Email)
 	if err != nil {
-		return echo.ErrNotFound
+		return echo.ErrUnauthorized
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(newUser.Password)) != nil {
+		return echo.ErrUnauthorized
 	}
 
 	response, err := RevokeToken(user, "")

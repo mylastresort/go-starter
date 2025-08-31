@@ -7,8 +7,9 @@ import (
 )
 
 type User struct {
-	gorm.Model
-	Tokens pq.StringArray `gorm:"type:text[]"`
-	Name   string
-	Email  string `gorm:"uniqueIndex"`
+	gorm.Model `json:"-"`
+	Tokens     pq.StringArray `gorm:"type:text[]" json:"-"`
+	Name       string
+	Email      string `gorm:"uniqueIndex"`
+	Password   string `json:"-"`
 }
