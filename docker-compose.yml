@@ -27,6 +27,8 @@ services:
       # To force the use of user-defined port
       # create .env file with these vars and set :? instead
       # - "${HTTP_PORT_HOST:?}:${HTTP_PORT:?}"
+    env_file:
+      - .env
     environment:
       HTTP_PORT: ${HTTP_PORT:-8080}
       # HTTP_PORT: ${HTTP_PORT:?}
