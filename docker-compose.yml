@@ -32,6 +32,8 @@ services:
     environment:
       HTTP_PORT: ${HTTP_PORT:-8080}
       # HTTP_PORT: ${HTTP_PORT:?}
+      # You should put here a comma-seperated list of origins
+      CORS_ORIGINS: "*"
     networks:
       - hypertube
     volumes:
