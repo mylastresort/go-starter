@@ -12,4 +12,6 @@ type User struct {
 	Name       string
 	Email      string `gorm:"uniqueIndex"`
 	Password   string `json:"-"`
+	Provider   string `json:"provider"`
+	ProviderId string `json:"provider_id"`
 }

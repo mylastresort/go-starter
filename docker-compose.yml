@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${HTTP_PORT_HOST:-8082}:${HTTP_PORT:-8080}"
+      - "${HTTP_PORT_HOST:-8080}:${HTTP_PORT:-8080}"
       # To force the use of user-defined port
       # create .env file with these vars and set :? instead
       # - "${HTTP_PORT_HOST:?}:${HTTP_PORT:?}"
@@ -33,7 +33,7 @@ services:
       HTTP_PORT: ${HTTP_PORT:-8080}
       # HTTP_PORT: ${HTTP_PORT:?}
       # You should put here a comma-seperated list of origins
-      CORS_ORIGINS: "*"
+      CORS_ORIGINS: "http://localhost:3000,https://accounts.google.com"
     networks:
       - hypertube
     volumes:
