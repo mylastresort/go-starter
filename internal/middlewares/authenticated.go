@@ -26,7 +26,7 @@ func AttachUser(next echo.HandlerFunc) echo.HandlerFunc {
 		if data == nil {
 			return jwt.ErrTokenNotValidYet
 		}
-		id := data["id"].(string)
+		id := data["id"].(float64)
 		user, err := users.GetUserById(id)
 		if err != nil {
 			return echo.ErrBadRequest

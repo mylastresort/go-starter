@@ -5,7 +5,7 @@ import (
 	"server/internal/services"
 )
 
-func GetUserById(id string) (models.User, error) {
+func GetUserById(id float64) (models.User, error) {
 	db := services.PostgresDB()
 	var user models.User
 	res := db.First(&user, "id = ?", id)
